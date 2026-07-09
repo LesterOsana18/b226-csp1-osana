@@ -6,7 +6,7 @@
  *   
  * * In partial fulfillment of the requirements for JOYSIS TVI 
  *   Submitted to: Sir Jareth Ronquillo
- */
+ */	 
 package com.joysistvi.loadreg.main;
 
 import java.util.Scanner;
@@ -20,11 +20,13 @@ public class Main {
 	// Create a global 'choice' variable for user inputs
 	static int choice;
 	
+	// Tracks the promo the user is currently registered to (null if none yet).
+	static String currentPromoName = null;
+	static String currentPromoDetails = null;
+	
 	public static void main(String[] args) {
 		// Load Registration Menu for Globe Users
-		System.out.println("===================================");
-	    System.out.println("      GLOBE LOAD REGISTRATION");
-	    System.out.println("===================================");
+		printHeader("GLOBE LOAD REGISTRATION");
 	    
 	    validateUSSDCode();
 	    
@@ -55,7 +57,7 @@ public class Main {
 	public static void mainMenu() {
 		do {
 			
-			printHeader("\t   GLOBE *143#");
+			printHeader("GLOBE *143#");
 
 	        System.out.println("[0] MyAccount");
 	        System.out.println("[1] Go+");
@@ -139,7 +141,7 @@ public class Main {
 	            return;
 
 	        default:
-	            System.out.println("\nInvalid option!\n");
+	            defaultMessage();
 	        }
 			
 		} while (true);
@@ -164,8 +166,16 @@ public class Main {
 			
 			switch (choice) {
 				case 1:
-					// TODO: Display current or ongoing data balance or promos active in this account
-					comingSoon();
+					printHeader("DATA BALANCE");
+					
+					if (currentPromoName != null) {
+						System.out.println("You are currently registered to:");
+						System.out.println();
+						System.out.println(currentPromoName);
+						System.out.println(currentPromoDetails);
+					} else {
+						System.out.println("You do not have any registered promos on this number.");
+					}
 					break;
 					
 				case 2:
@@ -588,7 +598,7 @@ public class Main {
 		        	break;
 		        	
 		        case 3: 
-		        	registerPromo("GoUNLI50", "Unli calls and texts to all networks + 500 MB of mobile data	");
+		        	registerPromo("GoUNLI50", "Unli calls and texts to all networks + 500 MB of mobile data");
 		        	break;
 		        	
 		        case 4:
@@ -705,6 +715,8 @@ public class Main {
 	public static void registerPromo(String promoName, String promoDetails) {
 
 	    if (confirmRegistration(promoName, promoDetails)) {
+	        currentPromoName = promoName;
+	        currentPromoDetails = promoDetails;
 	        successMessage(promoName, promoDetails);
 	    } else {
 	        System.out.println("\nRegistration cancelled.");
@@ -751,7 +763,7 @@ public class Main {
  	
  	// defaultMessage() method
 	public static void defaultMessage() {
-		System.out.println("Invalid option!");
+		System.out.println("\nInvalid option!");
 		System.out.println("Please try again.");
 	}
  	
@@ -763,9 +775,13 @@ public class Main {
 	
 	// printHeader() method
 	public static void printHeader(String title) {
-		// Template for a fixed header
+		// Fixed divider width
+		final int width = 34;
+		int padding = Math.max(0, (width - title.length()) / 2);
+		String centered = " ".repeat(padding) + title;
+		
 		System.out.println("\n==================================");
-	    System.out.println(title);
+	    System.out.println(centered);
 	    System.out.println("==================================");
 	}
 	
