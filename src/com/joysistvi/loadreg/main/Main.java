@@ -174,7 +174,7 @@ public class Main {
 						System.out.println(currentPromoName);
 						System.out.println(currentPromoDetails);
 					} else {
-						System.out.println("You do not have any registered promos on this number.");
+						System.out.println("\nYou do not have any registered promos on this number.");
 					}
 					break;
 					
@@ -798,10 +798,10 @@ public class Main {
 
 	        } catch (InputMismatchException e) {
 
-	            System.out.println("Invalid input. Numbers only.");
-
+	            System.out.println("\nInvalid input. Numbers only.");
 	            input.nextLine();
-
+	            System.out.print("\nReply: ");
+	            
 	        }
 
 	    }
