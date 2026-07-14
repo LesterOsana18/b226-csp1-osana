@@ -11,6 +11,7 @@ package com.joysistvi.loadreg.main;
 
 import java.util.Scanner;
 import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 
 public class Main {
 	
@@ -23,6 +24,12 @@ public class Main {
 	// Tracks the promo the user is currently registered to (null if none yet).
 	static String currentPromoName = null;
 	static String currentPromoDetails = null;
+	
+	// Tracks how much load the user has available to spend on promos.
+	static double loadBalance = 500;
+	
+	// Logs every successful promo registration for the "Registration History" screen.
+	static StringBuilder registrationHistory = new StringBuilder();
 	
 	public static void main(String[] args) {
 		// Load Registration Menu for Globe Users
@@ -39,7 +46,7 @@ public class Main {
 		do {
 			
 			System.out.print("\nDial USSD Code: ");
-			ussd = input.nextLine();
+			ussd = input.nextLine().trim();
 			
 			if (!ussd.equals("*143#")) {
 				System.out.println("\nInvalid USSD Code.");
@@ -159,7 +166,8 @@ public class Main {
 			System.out.println("[2] Surf Alert");
 			System.out.println("[3] Load Call Card");
 			System.out.println("[4] My Devices");
-			System.out.println("[5] Back");
+			System.out.println("[5] Registration History");
+			System.out.println("[6] Back");
 			
 			System.out.print("Reply: ");
 			choice = getIntegerInput();
@@ -168,13 +176,16 @@ public class Main {
 				case 1:
 					printHeader("DATA BALANCE");
 					
+					System.out.println("Load Balance: PHP " + String.format("%.2f", loadBalance));
+					System.out.println();
+					
 					if (currentPromoName != null) {
 						System.out.println("You are currently registered to:");
 						System.out.println();
 						System.out.println(currentPromoName);
 						System.out.println(currentPromoDetails);
 					} else {
-						System.out.println("\nYou do not have any registered promos on this number.");
+						System.out.println("You do not have any registered promos on this number.");
 					}
 					break;
 					
@@ -183,7 +194,7 @@ public class Main {
 					break;
 					
 				case 3:
-					comingSoon();
+					loadCallCard();
 					break;
 					
 				case 4:
@@ -191,6 +202,16 @@ public class Main {
 					break;
 					
 				case 5:
+					printHeader("REGISTRATION HISTORY");
+					
+					if (registrationHistory.length() == 0) {
+						System.out.println("You have no registration history yet.");
+					} else {
+						System.out.print(registrationHistory);
+					}
+					break;
+					
+				case 6:
 					// Returns to main menu when selected
 					return;
 					
@@ -224,43 +245,50 @@ public class Main {
 		        case 1:
 		        	registerPromo(
 		        		"GoPLUS99",
-		        		"8 GB all-access data + 8 GB for choice of apps + 4 GB free 5G + unli all-net texts");
+		        		"8 GB all-access data + 8 GB for choice of apps + 4 GB free 5G + unli all-net texts",
+		        		99);
 		        	break;
 		        	
 		        case 2:
 		        	registerPromo(
 	        			"GoPLUS109",
-		        		"10 GB all-access data + 8 GB for choice of apps + 4 GB free 5G + unli all-net texts");
+		        		"10 GB all-access data + 8 GB for choice of apps + 4 GB free 5G + unli all-net texts",
+		        		109);
 		        	break;
 		        	
 		        case 3:
 		        	registerPromo(
 			        	"GoPLUS129",
-			        	"10 GB all-access data + 8 GB for choice of apps + 8 GB free 5G + unli all-net texts + unli calls to Globe and TM");
+			        	"10 GB all-access data + 8 GB for choice of apps + 8 GB free 5G + unli all-net texts + unli calls to Globe and TM",
+		        		129);
 		        	break;
 		        	
 		        case 4:
 		        	registerPromo(
 			        	"GoPLUS149",
-			        	"12 GB all-access data + 8 GB for choice of apps + 8 GB free 5G + unli all-net calls and texts");
+			        	"12 GB all-access data + 8 GB for choice of apps + 8 GB free 5G + unli all-net calls and texts",
+		        		149);
 		        	break;
 		        	
 		        case 5:
 		        	registerPromo(
 			        	"GoPLUS179",
-			        	"8 GB all-access data + 8 GB for choice of apps + 8 GB free 5G + unli all-net texts");
+			        	"8 GB all-access data + 8 GB for choice of apps + 8 GB free 5G + unli all-net texts",
+		        		179);
 		        	break;
 		        	
 		        case 6:
 		        	registerPromo(
 			        	"GoPLUS250",
-			        	"15 GB all-access data + 15 GB for choice of apps + 8 GB free 5G");
+			        	"15 GB all-access data + 15 GB for choice of apps + 8 GB free 5G",
+		        		250);
 		        	break;
 		        	
 		        case 7:
 		        	registerPromo(
 			        	"GoPLUS400",
-			        	"25 GB all-access data + 15 GB for choice of apps + 8 GB free 5G");
+			        	"25 GB all-access data + 15 GB for choice of apps + 8 GB free 5G",
+		        		400);
 		        	break;
 		        	
 		        case 8:
@@ -293,7 +321,8 @@ public class Main {
 		        case 1:
 		        	registerPromo(
 		        		"SuperGo99",
-		        		"7 GB all-access data + unli all-net texts, valid for 15 days");
+		        		"7 GB all-access data + unli all-net texts, valid for 15 days",
+		        		99);
 		        	break;
 		        	
 		        case 2:
@@ -329,31 +358,36 @@ public class Main {
 		        case 1:
 		        	registerPromo(
 			        	"GoEXTRA59",
-			        	"5 GB all-access data + unli all-net calls and texts");
+			        	"5 GB all-access data + unli all-net calls and texts",
+		        		59);
 		        	break;
 		        	
 		        case 2:
 		        	registerPromo(
 			        	"GoEXTRA99",
-			        	"8 GB all-access data + unli all-net calls and texts");
+			        	"8 GB all-access data + unli all-net calls and texts",
+		        		99);
 		        	break;
 		        	
 		        case 3:
 		        	registerPromo(
 			        	"GoEXTRA109",
-			        	"10 GB all-access data + unli all-net calls and texts");
+			        	"10 GB all-access data + unli all-net calls and texts",
+		        		109);
 		        	break;
 		        	
 		        case 4:
 		        	registerPromo(
 			        	"GoEXTRA179",
-			        	"5 GB all-access data + unli all-net calls and texts");
+			        	"5 GB all-access data + unli all-net calls and texts",
+		        		179);
 		        	break;
 		        	
 		        case 5:
 		        	registerPromo(
 		        		"GoEXTRA199",
-		        		"8 GB all-access data + unli all-net calls and texts");
+		        		"8 GB all-access data + unli all-net calls and texts",
+		        		199);
 		        	break;
 		        	
 		        case 6:
@@ -389,31 +423,36 @@ public class Main {
 		        case 1:
 		        	registerPromo(
 		        		"UNLI 5G 59",
-		        		"Unli Data for 5G + 2 GB for all sites");
+		        		"Unli Data for 5G + 2 GB for all sites",
+		        		59);
 		        	break;
 		        	
 		        case 2:
 		        	registerPromo(
 			        	"UNLI 5G 80",
-			        	"Unli Data for 5G + 2 GB for all sites + unli all-net calls and texts");
+			        	"Unli Data for 5G + 2 GB for all sites + unli all-net calls and texts",
+		        		80);
 		        	break;
 		        	
 		        case 3:
 		        	registerPromo(
 			        	"UnliGo99 Facebook",
-			        	"Unli Facebook + 5 GB all-access data + unli all-net texts");
+			        	"Unli Facebook + 5 GB all-access data + unli all-net texts",
+		        		99);
 		        	break;
 		        	
 		        case 4:
 		        	registerPromo(
 			        	"UnliGo99 TikTok",
-			        	"Unli TikTok + 5 GB all-access data + unli all-net texts");
+			        	"Unli TikTok + 5 GB all-access data + unli all-net texts",
+		        		99);
 		        	break;
 		        	
 		        case 5:
 		        	registerPromo(
 			        	"UnliGo99 Instagram",
-			        	"Unli Instagram + 5 GB all-access data + unli all-net texts");
+			        	"Unli Instagram + 5 GB all-access data + unli all-net texts",
+		        		99);
 		        	break;
 		        	
 		        case 6:
@@ -446,13 +485,15 @@ public class Main {
 		        case 1:
 		        	registerPromo(
 		        		"Go59",
-		        		"5 GB all-access data + unli all-net texts");
+		        		"5 GB all-access data + unli all-net texts",
+		        		59);
 		        	break;
 		        	
 		        case 2:
 		        	registerPromo(
 		        		"Go59 for Students",
-		        		"5 GB all-access data + 1 GB for GoLEARN apps + unli all-net texts");
+		        		"5 GB all-access data + 1 GB for GoLEARN apps + unli all-net texts",
+		        		59);
 		        	break;
 		        	
 		        case 3:
@@ -487,25 +528,29 @@ public class Main {
 		        case 1:
 		        	registerPromo(
 		        		"GoBOOST15",
-		        		"Additional 1 GB data for all sites and apps");
+		        		"Additional 1 GB data for all sites and apps",
+		        		15);
 		        	break;
 		        	
 		        case 2:
 		        	registerPromo(
 			        	"GoWATCH10",
-			        	"Additional 1 GB for video apps (YouTube, Netflix, Viu, and Disney+)");
+			        	"Additional 1 GB for video apps (YouTube, Netflix, Viu, and Disney+)",
+		        		10);
 		        	break;
 		        	
 		        case 3:
 		        	registerPromo(
 			        	"GoPLAY10",
-			        	"Additional 1 GB for gaming apps (Mobile Legends, PUBG, Call of Duty, Discord, Twitch, and Honor of Kings)");
+			        	"Additional 1 GB for gaming apps (Mobile Legends, PUBG, Call of Duty, Discord, Twitch, and Honor of Kings)",
+		        		10);
 		        	break;
 		        	
 		        case 4:
 		        	registerPromo(
 			        	"GoSHARE10",
-			        	"Additional 1 GB for social media apps (Facebook, Instagram, TikTok, X, Viber, WhatsApp, and Canva)");
+			        	"Additional 1 GB for social media apps (Facebook, Instagram, TikTok, X, Viber, WhatsApp, and Canva)",
+		        		10);
 		        	break;
 		        	
 		        case 5:
@@ -543,13 +588,15 @@ public class Main {
 		        case 1:
 		        	registerPromo(
 		        		"Surf4All 99",
-		        		"9 GB Data + Valid for 7 days + Can be shared with your friends and fam");
+		        		"9 GB Data + Valid for 7 days + Can be shared with your friends and fam",
+		        		99);
 		        	break;
 		        	
 		        case 2:
 		        	registerPromo(
 			        	"Surf4All 249",
-			        	"20 GB Data + Valid for 7 days + Can be shared with your friends and fam");
+			        	"20 GB Data + Valid for 7 days + Can be shared with your friends and fam",
+		        		249);
 			        break;
 		        	
 		        case 3:
@@ -590,27 +637,33 @@ public class Main {
 	        
 	        switch (choice) {
 		        case 1:
-		        	registerPromo("GoUNLI20", "Unli calls and texts to all networks + 50 MB of mobile data");
+		        	registerPromo("GoUNLI20", "Unli calls and texts to all networks + 50 MB of mobile data",
+		        		20);
 		        	break;
 		        	
 		        case 2:
-		        	registerPromo("GoUNLI30", "Unli calls and texts to all networks + 100 MB of mobile data");
+		        	registerPromo("GoUNLI30", "Unli calls and texts to all networks + 100 MB of mobile data",
+		        		30);
 		        	break;
 		        	
 		        case 3: 
-		        	registerPromo("GoUNLI50", "Unli calls and texts to all networks + 500 MB of mobile data");
+		        	registerPromo("GoUNLI50", "Unli calls and texts to all networks + 500 MB of mobile data",
+		        		50);
 		        	break;
 		        	
 		        case 4:
-		        	registerPromo("GoUNLI95", "Unli calls and texts to all networks + 1 GB of mobile data");
+		        	registerPromo("GoUNLI95", "Unli calls and texts to all networks + 1 GB of mobile data",
+		        		95);
 		        	break;
 		        	
 		        case 5:
-		        	registerPromo("GoUNLI180", "Unli calls and texts to all networks + 2 GB of mobile data");
+		        	registerPromo("GoUNLI180", "Unli calls and texts to all networks + 2 GB of mobile data",
+		        		180);
 		        	break;
 		        	
 		        case 6:
-		        	registerPromo("GoUNLI350", "Unli calls and texts to all networks + 3 GB of mobile data");
+		        	registerPromo("GoUNLI350", "Unli calls and texts to all networks + 3 GB of mobile data",
+		        		350);
 		        	break;
 		        	
 		        case 7:
@@ -705,6 +758,33 @@ public class Main {
 		return;
 	}
 	
+	// loadCallCard() method
+	public static void loadCallCard() {
+		printHeader("LOAD CALL CARD");
+		
+		System.out.println("Current Load Balance: PHP " + String.format("%.2f", loadBalance));
+		System.out.println("\nEnter amount to load (0 to cancel):");
+		System.out.print("Amount: PHP ");
+		
+		int amount = getIntegerInput();
+		
+		if (amount == 0) {
+			System.out.println("\nLoad cancelled.");
+			return;
+		}
+		
+		if (amount < 0) {
+			System.out.println("\nInvalid amount. Please enter a positive value.");
+			return;
+		}
+		
+		loadBalance += amount;
+		
+		printHeader("LOAD SUCCESSFUL");
+		System.out.println("You have successfully loaded PHP " + String.format("%.2f", (double) amount) + ".");
+		System.out.println("New Load Balance: PHP " + String.format("%.2f", loadBalance));
+	}
+	
 	// pause() method
 	public static void pause() {
 		System.out.println("\nPress ENTER to continue...");
@@ -712,11 +792,24 @@ public class Main {
 	}
 	
 	// registerPromo() method
-	public static void registerPromo(String promoName, String promoDetails) {
+	public static void registerPromo(String promoName, String promoDetails, double price) {
 
-	    if (confirmRegistration(promoName, promoDetails)) {
+	    if (loadBalance < price) {
+	        printHeader("INSUFFICIENT BALANCE");
+
+	        System.out.println("You need PHP " + String.format("%.2f", price) + " to register to this promo.");
+	        System.out.println("Your current load balance is PHP " + String.format("%.2f", loadBalance) + ".");
+	        System.out.println("\nPlease load up before registering to this promo.");
+
+	        return;
+	    }
+
+	    if (confirmRegistration(promoName, promoDetails, price)) {
+	        loadBalance -= price;
 	        currentPromoName = promoName;
 	        currentPromoDetails = promoDetails;
+	        registrationHistory.append("- ").append(promoName)
+	            .append(" (PHP ").append(String.format("%.2f", price)).append(")\n");
 	        successMessage(promoName, promoDetails);
 	    } else {
 	        System.out.println("\nRegistration cancelled.");
@@ -725,13 +818,15 @@ public class Main {
 	}
 	
 	// confirmRegistration() method
-	public static boolean confirmRegistration(String promoName, String promoDetails) {
+	public static boolean confirmRegistration(String promoName, String promoDetails, double price) {
 
 	    printHeader("CONFIRM REGISTRATION");
 
 	    System.out.println("Promo: " + promoName);
 	    System.out.println();
 	    System.out.println(promoDetails);
+	    System.out.println();
+	    System.out.println("Price: PHP " + String.format("%.2f", price));
 
 	    System.out.println("\n[1] Confirm");
 	    System.out.println("[2] Cancel");
@@ -755,6 +850,8 @@ public class Main {
 
 	    System.out.println(promoName);
 	    System.out.println(promoDetails);
+	    System.out.println();
+	    System.out.println("Remaining Load Balance: PHP " + String.format("%.2f", loadBalance));
 	    
 	    pause();
 
@@ -802,6 +899,13 @@ public class Main {
 	            input.nextLine();
 	            System.out.print("\nReply: ");
 	            
+	        } catch (NoSuchElementException e) {
+
+	            // Input stream ended unexpectedly (e.g. Ctrl+D/Ctrl+Z or piped
+	            // input running out) - exit cleanly instead of crashing.
+	            System.out.println("\nInput stream closed unexpectedly. Exiting program...");
+	            System.exit(0);
+
 	        }
 
 	    }
